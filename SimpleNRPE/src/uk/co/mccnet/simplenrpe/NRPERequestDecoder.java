@@ -27,7 +27,8 @@ public class NRPERequestDecoder extends ReplayingDecoder<Void> {
 		// Will only reach hear when NRPEPacket.PACKET_SIZE is reached
 		short packetVersionShort = packet.readShort();
 		short packetTypeShort = packet.readShort();
-		int crc = packet.readInt();
+		// Skip CRC
+		packet.readInt();
 		short statusShort = packet.readShort();
 		ByteBuf rawMessageByteBuf = packet.readBytes(NRPEPacket.MESSAGE_SIZE);
 		
@@ -40,7 +41,7 @@ public class NRPERequestDecoder extends ReplayingDecoder<Void> {
 				EnumUtils.getEnum(NRPEStatus.class, statusShort);
 		
 		if (messageStatus == null) {
-			messageStatus = NRPEStatus.STATE_UNKNOWN;
+			messageStatus = NRPEStatus.UNKNOWN;
 		}
 		
 		NRPEPacketVersion packetVersion = (NRPEPacketVersion) 

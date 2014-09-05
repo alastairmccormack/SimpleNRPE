@@ -2,6 +2,8 @@ package uk.co.mccnet.simplenrpe;
 
 import javax.net.ssl.SSLEngine;
 
+import uk.co.mccnet.simplenrpe.handlers.NRPEEchoServerHandler;
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
@@ -11,9 +13,11 @@ import io.netty.handler.ssl.util.SelfSignedCertificate;
 
 public class NRPEServerInitializer extends ChannelInitializer<SocketChannel> {
 	private boolean sslEnabled = false;
+	private ChannelHandler mainServerHandler;
 	
-	public NRPEServerInitializer(boolean sslEnabled) {
+	public NRPEServerInitializer(boolean sslEnabled, ChannelHandler mainServerHandler) {
 		this.sslEnabled = sslEnabled;
+		this.mainServerHandler = mainServerHandler;
 	}
 
 	@Override
@@ -32,7 +36,9 @@ public class NRPEServerInitializer extends ChannelInitializer<SocketChannel> {
 		
 		pipeline.addLast(new NRPERequestDecoder() );
 		pipeline.addLast(new NRPEResponseEncoder() );
-		pipeline.addLast(new NRPEServerHandler() );
+
+		// Where the interesting stuff happens
+		pipeline.addLast( mainServerHandler );
 	}
 	
 	
